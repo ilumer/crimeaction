@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -47,10 +48,12 @@ public class CrimePagerActivity extends AppCompatActivity {
             }
             @Override
             public void onPageSelected(int position) {
-                crime c = mCrimes.get(position);
-                Log.e("hello",c.getmTitle());
-                if (c.getmTitle()!=null)
-                    setTitle(c.getmTitle());
+                /*crime c = mCrimes.get(position);
+                Log.e("TAG",c.getmTitle());
+                if (c.getmTitle()!=null){
+                    Log.e("TAG",c.getmTitle());
+                }
+                   setTitle(c.getmTitle());*/
             }
 
             @Override
@@ -58,6 +61,7 @@ public class CrimePagerActivity extends AppCompatActivity {
 
             }
         });
+
         UUID uuid = (UUID)getIntent().getSerializableExtra(CrimeFragment.ExTRA_CRIME_ID);
         for (int i =0;i<mCrimes.size();i++){
             if (mCrimes.get(i).getmId()==uuid){

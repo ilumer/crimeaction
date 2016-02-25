@@ -64,7 +64,7 @@ public class CrimeFragment extends Fragment{
             }
         });
         mSolvedCheckedBox = (CheckBox) view.findViewById(R.id.Issolved);
-        mSolvedCheckedBox.setChecked(mCrime.getmSloved());
+        //mSolvedCheckedBox.setChecked(mCrime.getmSloved());
         mSolvedCheckedBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -120,9 +120,9 @@ public class CrimeFragment extends Fragment{
                         .getSerializableExtra(DatePickerFragment.EXTRA_DATE);
 
                 mCrime.setmDate(date);
-                if (date==null){
+                /*if (date==null){
                     Log.e("hello","hello");
-                }
+                }*/
                 //mDateButton.setText(date.toString());
                 upDate();
             }

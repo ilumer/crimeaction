@@ -4,6 +4,9 @@ import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -27,6 +30,8 @@ public class CrimeListFragment extends ListFragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().setTitle(R.string.crimes_title);
+        setHasOptionsMenu(true);
+        //当接收到createMenu的回调方法使用
         mCrimes=crimelab.getScrimelab(getActivity()).getListCrimes();
         //ArrayAdapter<crime> adapter = new ArrayAdapter<crime>(getActivity(),R.layout.support_simple_spinner_dropdown_item,mCrimes);
         CrimeAdapter adapter = new CrimeAdapter(mCrimes);
@@ -77,5 +82,27 @@ public class CrimeListFragment extends ListFragment{
         if (requestCode==RESULT_CRIME){
 
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_list_crime,menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_new_crime:
+                crime c = new crime();
+                crimelab.getScrimelab(getActivity()).addCrime(c);
+                Intent i = new Intent(getActivity(),CrimePagerActivity.class);
+                i.putExtra(CrimeFragment.ExTRA_CRIME_ID, c.getmId());
+                startActivityForResult(i, 0);
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
