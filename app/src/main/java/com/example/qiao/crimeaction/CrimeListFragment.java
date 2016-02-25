@@ -4,6 +4,9 @@ import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,6 +27,7 @@ import java.util.List;
 public class CrimeListFragment extends ListFragment{
     private ArrayList<crime> mCrimes;
     private static final String TAG = "CrimeListFragment";
+    private boolean msubtitle ;
     private static final int RESULT_CRIME = 1;
 
     @Override
@@ -31,6 +35,8 @@ public class CrimeListFragment extends ListFragment{
         super.onCreate(savedInstanceState);
         getActivity().setTitle(R.string.crimes_title);
         setHasOptionsMenu(true);
+        setRetainInstance(true);
+        msubtitle = false;
         //当接收到createMenu的回调方法使用
         mCrimes=crimelab.getScrimelab(getActivity()).getListCrimes();
         //ArrayAdapter<crime> adapter = new ArrayAdapter<crime>(getActivity(),R.layout.support_simple_spinner_dropdown_item,mCrimes);
@@ -100,9 +106,31 @@ public class CrimeListFragment extends ListFragment{
                 i.putExtra(CrimeFragment.ExTRA_CRIME_ID, c.getmId());
                 startActivityForResult(i, 0);
                 break;
+
+            case R.id.menu_title_show_subtitle:
+                ActionBar actionBar= ((AppCompatActivity) getActivity()).getSupportActionBar();
+                if (actionBar.getSubtitle()==null){
+                    actionBar.setSubtitle(R.string.subtitle);
+                    msubtitle=true;
+                    item.setTitle(R.string.hide_subtitle);
+                }else {
+                    actionBar.setSubtitle(null);
+                    msubtitle=false;
+                    item.setTitle(R.string.show_subtitle);
+                }
             default:
                 return super.onOptionsItemSelected(item);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        if (msubtitle==true){
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(R.string.subtitle);
+        }
+
+        return view;
     }
 }
