@@ -4,9 +4,9 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 
 
 import java.util.ArrayList;
@@ -16,12 +16,17 @@ public class CrimePagerActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private ArrayList<crime> mCrimes;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mViewPager = new ViewPager(this);
         mViewPager.setId(R.id.viewPager);
         setContentView(mViewPager);
+
+        ActionBar actionBar = getSupportActionBar();
+
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         mCrimes = crimelab.getScrimelab(this).getListCrimes();
 
@@ -48,12 +53,9 @@ public class CrimePagerActivity extends AppCompatActivity {
             }
             @Override
             public void onPageSelected(int position) {
-                /*crime c = mCrimes.get(position);
-                Log.e("TAG",c.getmTitle());
-                if (c.getmTitle()!=null){
-                    Log.e("TAG",c.getmTitle());
-                }
-                   setTitle(c.getmTitle());*/
+                crime c = mCrimes.get(position);
+                if (c.getmTitle()!=null)
+                   setTitle(c.getmTitle());
             }
 
             @Override
