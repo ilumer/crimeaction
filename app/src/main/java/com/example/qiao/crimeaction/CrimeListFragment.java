@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -29,6 +30,8 @@ public class CrimeListFragment extends ListFragment{
     private static final String TAG = "CrimeListFragment";
     private boolean msubtitle ;
     private static final int RESULT_CRIME = 1;
+    private ListView myListview;
+    private CrimeAdapter myCrimeAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,9 +42,8 @@ public class CrimeListFragment extends ListFragment{
         msubtitle = false;
         //当接收到createMenu的回调方法使用
         mCrimes=crimelab.getScrimelab(getActivity()).getListCrimes();
-        //ArrayAdapter<crime> adapter = new ArrayAdapter<crime>(getActivity(),R.layout.support_simple_spinner_dropdown_item,mCrimes);
-        CrimeAdapter adapter = new CrimeAdapter(mCrimes);
-        setListAdapter(adapter);
+
+        //setListAdapter(adapter);
         }
 
     @Override
@@ -80,7 +82,9 @@ public class CrimeListFragment extends ListFragment{
     @Override
     public void onResume() {
         super.onResume();
-        ((CrimeAdapter) getListAdapter()).notifyDataSetChanged();
+        //((CrimeAdapter) getListAdapter()).notifyDataSetChanged();
+        ((CrimeAdapter) myListview.getAdapter()).notifyDataSetChanged();
+
     }
 
     @Override
@@ -118,6 +122,8 @@ public class CrimeListFragment extends ListFragment{
                     msubtitle=false;
                     item.setTitle(R.string.show_subtitle);
                 }
+                break;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -126,11 +132,36 @@ public class CrimeListFragment extends ListFragment{
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
+        /*View view = super.onCreateView(inflater, container, savedInstanceState);
+        ViewGroup parent = (ViewGroup) inflater.inflate(R.layout.my_list_view,container,false);
+        parent.addView(view,0);
+        /*myListview = (ListView) parent.findViewById(android.R.id.list );
+        //setListAdapter(new CrimeAdapter(mCrimes));
+        myCrimeAdapter = new CrimeAdapter(mCrimes);
+        myListview.setAdapter(myCrimeAdapter);
+        myListview.setEmptyView();
+        CrimeAdapter adapter = new CrimeAdapter(mCrimes);
+        setListAdapter(adapter);*/
+        View parent = inflater.inflate(R.layout.my_list_view,null);
+        myListview = (ListView) parent.findViewById(android.R.id.list);
+        TextView textView = (TextView) parent.findViewById(R.id.show_empty);
+        Button mButton = (Button) parent.findViewById(R.id.add_a_new_crime);
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                crime c = new crime();
+                crimelab.getScrimelab(getActivity()).addCrime(c);
+                Intent i = new Intent(getActivity(),CrimePagerActivity.class);
+                i.putExtra(CrimeFragment.ExTRA_CRIME_ID, c.getmId());
+                startActivityForResult(i, 0);
+            }
+        });
+        myCrimeAdapter = new CrimeAdapter(mCrimes);
+        myListview.setAdapter(myCrimeAdapter);
+        myListview.setEmptyView(textView);
         if (msubtitle==true){
             ((AppCompatActivity) getActivity()).getSupportActionBar().setSubtitle(R.string.subtitle);
         }
-
-        return view;
+        return parent;
     }
 }
