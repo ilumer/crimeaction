@@ -1,7 +1,9 @@
 package com.example.qiao.crimeaction;
 
 import android.content.Context;
+import android.util.Log;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -13,10 +15,22 @@ public class crimelab {
     private static crimelab Scrimelab;
     private Context mAppContext;
     private ArrayList<crime> mcrimes;
+    private static final String FILENAME = "crimes.json";
+    private static final String TAG = "crimelab";
+    private CrimeJSONserializer crimeJSONserializer;
 
     public crimelab(Context AppContext) {
         this.mAppContext = AppContext;
-        mcrimes = new ArrayList<>();
+        crimeJSONserializer = new CrimeJSONserializer(mAppContext,FILENAME);
+
+        String filelocation = AppContext.getFilesDir().toString();
+        try{
+            mcrimes = crimeJSONserializer.loadcrimes();
+        }catch (Exception e){
+            mcrimes = new ArrayList<>();
+            Log.e(TAG,e.getMessage());
+        }
+
     }
 
     public static crimelab getScrimelab(Context s){
@@ -41,5 +55,17 @@ public class crimelab {
 
     public void addCrime(crime c){
         mcrimes.add(c);
+    }
+
+    public boolean savecrimes(){
+        try{
+            crimeJSONserializer.saveCrimes(getListCrimes());
+            Log.d(TAG,"crimes saved to file");
+            return true;
+        }catch (IOException e){
+            Log.e(TAG,e.getMessage());
+            return false;
+        }
+        //保存当前的数据
     }
 }

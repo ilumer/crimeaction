@@ -5,14 +5,11 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,9 +20,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 import java.util.UUID;
 
 public class CrimeFragment extends Fragment{
@@ -147,5 +142,11 @@ public class CrimeFragment extends Fragment{
                 return super.onOptionsItemSelected(item);
         }
         //return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        crimelab.getScrimelab(getActivity()).savecrimes();
     }
 }
