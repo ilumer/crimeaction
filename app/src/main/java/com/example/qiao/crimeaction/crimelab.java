@@ -23,7 +23,7 @@ public class crimelab {
         this.mAppContext = AppContext;
         crimeJSONserializer = new CrimeJSONserializer(mAppContext,FILENAME);
 
-        String filelocation = AppContext.getFilesDir().toString();
+        //String filelocation = AppContext.getFilesDir().toString();
         try{
             mcrimes = crimeJSONserializer.loadcrimes();
         }catch (Exception e){
