@@ -222,6 +222,7 @@ public class CrimeListFragment extends ListFragment{
         return parent;
     }
 
+    //这个是为了兼容性而坐的
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         getActivity().getMenuInflater().inflate(R.menu.crime_list_item_context,menu);
