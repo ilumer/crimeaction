@@ -68,4 +68,8 @@ public class crimelab {
         }
         //保存当前的数据
     }
+
+    public void deleteCrime(crime c){
+        mcrimes.remove(c);
+    }
 }
