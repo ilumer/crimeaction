@@ -32,7 +32,6 @@ import android.widget.ImageView;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -52,6 +51,8 @@ public class CrimeFragment extends Fragment{
 
     public static String DIALOG_DATE = "date";
 
+    public static final String DIALOG_IMAGE = "image";
+
     public static String TAG =
             "com.example.qiao.crimeaction.CrimeFragment";
 
@@ -69,7 +70,7 @@ public class CrimeFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     //实现视图层的创建
-        View view = inflater.inflate(R.layout.fragment_crime,container,false);
+        final View view = inflater.inflate(R.layout.fragment_crime,container,false);
         //false 是否将生成的视图传递给父视图
         mTitleFiled = (EditText) view.findViewById(R.id.Crime_title);
         mDateButton = (Button) view.findViewById(R.id.showTime);
@@ -83,7 +84,7 @@ public class CrimeFragment extends Fragment{
 
                     File photofile = createFile();
                     if (photofile!=null){
-                        mCrime.setImageLocation(photofile);
+                        mCrime.setImageLocation(photofile.toString());
                         i.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photofile));
                     }
                     startActivityForResult(i, REQUEST_PHOTO);
@@ -129,9 +130,24 @@ public class CrimeFragment extends Fragment{
 
         mimageview = (ImageView) view.findViewById(R.id.ImageviewShow);
         if (mCrime.getMimageLocation()!=null){
-            Bitmap image = getBitmapwithFile(mCrime.getMimageLocation());
+            Bitmap image = getBitmapwithFile(new File(mCrime.getMimageLocation()));
             mimageview.setImageBitmap(image);
         }
+        mimageview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v== view.findViewById(R.id.ImageviewShow)){
+                    if (mCrime.getMimageLocation()==null){
+                        return;
+                    }else {
+                        FragmentManager fragmentManager = getActivity().getFragmentManager();
+                        String path = mCrime.getMimageLocation();
+                        BigImageFragment.newInstance(path)
+                                .show(fragmentManager,DIALOG_IMAGE);
+                    }
+                }
+            }
+        });
         setHasOptionsMenu(true);
         return view;
     }
@@ -170,7 +186,7 @@ public class CrimeFragment extends Fragment{
                 //mDateButton.setText(date.toString());
                 upDate();
             } else if (requestCode==REQUEST_PHOTO){
-                File imagefile = mCrime.getMimageLocation();
+                File imagefile = new File(mCrime.getMimageLocation());
                 mimageview.setImageBitmap(getBitmapwithFile(imagefile));
             }
 
