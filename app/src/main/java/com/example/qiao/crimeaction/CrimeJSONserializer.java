@@ -72,7 +72,7 @@ public class CrimeJSONserializer {
                 crimes.add(new crime(jsonArray.getJSONObject(i)));
             }
         }catch (FileNotFoundException e){
-            Log.e("what","what");
+            Log.e(TAG,e.getMessage());
         }finally {
             if (reader!=null){
                 reader.close();

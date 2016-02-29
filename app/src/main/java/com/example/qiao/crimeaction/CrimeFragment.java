@@ -5,12 +5,17 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 
 import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,8 +26,14 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
@@ -31,12 +42,18 @@ public class CrimeFragment extends Fragment{
     private EditText mTitleFiled;
     private Button mDateButton;
     private CheckBox mSolvedCheckedBox;
+    private ImageView mimageview;
     public static final String ExTRA_CRIME_ID =
             "com.example.qiao.crime_id";
 
-    public static final int RESULT_DATE = 0;
+    public static final int REQUEST_DATE = 0;
+
+    public static final int REQUEST_PHOTO = 1;
 
     public static String DIALOG_DATE = "date";
+
+    public static String TAG =
+            "com.example.qiao.crimeaction.CrimeFragment";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,6 +73,23 @@ public class CrimeFragment extends Fragment{
         //false 是否将生成的视图传递给父视图
         mTitleFiled = (EditText) view.findViewById(R.id.Crime_title);
         mDateButton = (Button) view.findViewById(R.id.showTime);
+        ImageButton mimageButton = (ImageButton) view.findViewById(R.id.Imagebutton);
+        mimageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (i.resolveActivity(getActivity()
+                        .getPackageManager()) != null) {
+
+                    File photofile = createFile();
+                    if (photofile!=null){
+                        mCrime.setImageLocation(photofile);
+                        i.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photofile));
+                    }
+                    startActivityForResult(i, REQUEST_PHOTO);
+                }
+            }
+        });
         //mDateButton.setText(GetSuitableDateformat());
         upDate();
         mDateButton.setOnClickListener(new View.OnClickListener() {
@@ -63,7 +97,7 @@ public class CrimeFragment extends Fragment{
             public void onClick(View v) {
                 FragmentManager fragmentManager = getFragmentManager();
                 DatePickerFragment datePickerFragment = DatePickerFragment.newInstance(mCrime.getmDate());
-                datePickerFragment.setTargetFragment(CrimeFragment.this,RESULT_DATE);
+                datePickerFragment.setTargetFragment(CrimeFragment.this,REQUEST_DATE);
                 datePickerFragment.show(fragmentManager,DIALOG_DATE);
             }
         });
@@ -93,6 +127,11 @@ public class CrimeFragment extends Fragment{
         });
         mTitleFiled.setText(mCrime.getmTitle());
 
+        mimageview = (ImageView) view.findViewById(R.id.ImageviewShow);
+        if (mCrime.getMimageLocation()!=null){
+            Bitmap image = getBitmapwithFile(mCrime.getMimageLocation());
+            mimageview.setImageBitmap(image);
+        }
         setHasOptionsMenu(true);
         return view;
     }
@@ -120,7 +159,7 @@ public class CrimeFragment extends Fragment{
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
             if (resultCode!=Activity.RESULT_OK)
                 return;
-            if (requestCode==RESULT_DATE){
+            if (requestCode==REQUEST_DATE){
                 Date date = (Date) data
                         .getSerializableExtra(DatePickerFragment.EXTRA_DATE);
 
@@ -130,6 +169,9 @@ public class CrimeFragment extends Fragment{
                 }*/
                 //mDateButton.setText(date.toString());
                 upDate();
+            } else if (requestCode==REQUEST_PHOTO){
+                File imagefile = mCrime.getMimageLocation();
+                mimageview.setImageBitmap(getBitmapwithFile(imagefile));
             }
 
     }
@@ -162,9 +204,29 @@ public class CrimeFragment extends Fragment{
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.setting,menu);
+        inflater.inflate(R.menu.setting, menu);
     }
 
+    private File createFile(){
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_"+timeStamp+"_";
+        File storageDir = getActivity().getExternalFilesDir(null);
 
+        File image =null;
+        try{
+            image = File.createTempFile(imageFileName,".jpg",storageDir);
+        }catch (IOException e){
+            Log.e(TAG,e.getMessage());
+        }
+        return image;
+    }
+
+    private Bitmap getBitmapwithFile(File file){
+        Bitmap temp = null;
+        if (file.exists()) {
+            temp = BitmapFactory.decodeFile(file.getAbsolutePath());
+        }
+        return temp;
+    }
 
 }

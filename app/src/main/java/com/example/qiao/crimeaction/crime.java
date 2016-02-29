@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.Date;
 import java.util.UUID;
 
@@ -20,10 +21,13 @@ public class crime {
 
     private Boolean mSloved = false;
 
+    private File mimageStore =null;
+
     private static final String JSON_ID= "id";
     private static final String JSON_TITLE = "title";
     private static final String JSON_DATE = "date";
     private static final String JSON_SOLVED = "solved";
+    private static final String JSON_IMAGE = "image";
 
     public crime() {
         this.mId = UUID.randomUUID();
@@ -36,6 +40,9 @@ public class crime {
             //Returns the value mapped by name if it exists,
             // coercing it if necessary, or throws if no such mapping exists.
             mTitle = jsonObject.getString(JSON_TITLE);
+        }
+        if (jsonObject.has(JSON_IMAGE)){
+            mimageStore = new File(jsonObject.getString(JSON_IMAGE));
         }
         mSloved = jsonObject.getBoolean(JSON_SOLVED);
         mDate = new Date(jsonObject.getString(JSON_DATE));
@@ -75,6 +82,8 @@ public class crime {
         jsonObject.put(JSON_DATE,mDate.toString());
         jsonObject.put(JSON_TITLE,mTitle);
         jsonObject.put(JSON_SOLVED,mSloved);
+        jsonObject.put(JSON_IMAGE,mimageStore.toString());
+        //无法直接将FILE存储
         return jsonObject;
     }
 
@@ -83,5 +92,16 @@ public class crime {
         return mTitle;
     }
 
+    public void setImageLocation(File file){
+        if (mimageStore!=null){
+            mimageStore.delete();
+            mimageStore = file;
+        }else {
+            mimageStore = file;
+        }
+    }
 
+    public File getMimageLocation(){
+        return mimageStore;
+    }
 }
