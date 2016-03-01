@@ -72,4 +72,23 @@
         android:layout_marginRight="16dp"
         android:text="@string/crime_solved_label"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/crime_report_text"
+        android:id="@+id/sendtext" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/crime_suspect_text"
+        android:id="@+id/serach_suspect" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/call_suspect"
+        android:id="@+id/callButton" />
+
+
 </LinearLayout>

@@ -23,11 +23,14 @@ public class crime {
 
     private String mimageStore =null;
 
+    private String msuspect;
+
     private static final String JSON_ID= "id";
     private static final String JSON_TITLE = "title";
     private static final String JSON_DATE = "date";
     private static final String JSON_SOLVED = "solved";
     private static final String JSON_IMAGE = "image";
+    private static final String JSON_SUSPECT = "suspect";
 
     public crime() {
         this.mId = UUID.randomUUID();
@@ -43,6 +46,9 @@ public class crime {
         }
         if (jsonObject.has(JSON_IMAGE)){
             mimageStore = jsonObject.getString(JSON_IMAGE);
+        }
+        if (jsonObject.has(JSON_SUSPECT)){
+            msuspect = jsonObject.getString(JSON_SUSPECT);
         }
         mSloved = jsonObject.getBoolean(JSON_SOLVED);
         mDate = new Date(jsonObject.getString(JSON_DATE));
@@ -83,6 +89,7 @@ public class crime {
         jsonObject.put(JSON_TITLE,mTitle);
         jsonObject.put(JSON_SOLVED,mSloved);
         jsonObject.put(JSON_IMAGE,mimageStore);
+        jsonObject.put(JSON_SUSPECT,msuspect);
         //无法直接将FILE存储
         return jsonObject;
     }
@@ -103,5 +110,13 @@ public class crime {
 
     public String getMimageLocation(){
         return mimageStore;
+    }
+
+    public String getSuspect() {
+        return JSON_SUSPECT;
+    }
+
+    public void setSuspect(String suspect){
+        msuspect = suspect;
     }
 }
