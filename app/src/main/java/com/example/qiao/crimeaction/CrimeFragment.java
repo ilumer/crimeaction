@@ -42,6 +42,7 @@ public class CrimeFragment extends Fragment{
     private Button mDateButton;
     private CheckBox mSolvedCheckedBox;
     private ImageView mimageview;
+
     public static final String ExTRA_CRIME_ID =
             "com.example.qiao.crime_id";
 
@@ -130,7 +131,8 @@ public class CrimeFragment extends Fragment{
 
         mimageview = (ImageView) view.findViewById(R.id.ImageviewShow);
         if (mCrime.getMimageLocation()!=null){
-            Bitmap image = getBitmapwithFile(new File(mCrime.getMimageLocation()));
+            Bitmap image = pictureUtils.decodeSampledBitmapFromFile
+                    (mCrime.getMimageLocation(),100,100);
             mimageview.setImageBitmap(image);
         }
         mimageview.setOnClickListener(new View.OnClickListener() {
@@ -150,13 +152,6 @@ public class CrimeFragment extends Fragment{
         });
         setHasOptionsMenu(true);
         return view;
-    }
-
-    private String GetSuitableDateformat(){
-        //String format = "EEEE:MMM:d:yyyy";
-        //SimpleDateFormat formats = new SimpleDateFormat(format, Locale.CHINA);
-        //return formats.format(mCrime.getmDate());
-        return mCrime.getmDate().toString();
     }
 
     public static Fragment newInstance(UUID crimeId){
@@ -187,7 +182,9 @@ public class CrimeFragment extends Fragment{
                 upDate();
             } else if (requestCode==REQUEST_PHOTO){
                 File imagefile = new File(mCrime.getMimageLocation());
-                mimageview.setImageBitmap(getBitmapwithFile(imagefile));
+                Bitmap image = pictureUtils.decodeSampledBitmapFromFile
+                        (imagefile.toString(), 100, 100);
+                mimageview.setImageBitmap(image);
             }
 
     }
@@ -201,6 +198,7 @@ public class CrimeFragment extends Fragment{
         switch (item.getItemId()) {
             case R.id.delete:
                 crimelab.getScrimelab(getActivity()).deleteCrime(mCrime);
+                new File(mCrime.getMimageLocation()).delete();
                 NavUtils.navigateUpFromSameTask(getActivity());
                 //startActivity(new Intent(getActivity(),CrimePagerActivity.class));
                 //startActivity(new Intent(getActivity(),CrimeListActivity.class));

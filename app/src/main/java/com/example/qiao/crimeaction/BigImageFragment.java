@@ -37,8 +37,9 @@ public class BigImageFragment extends DialogFragment{
         ImageView imageView = (ImageView) view.findViewById(R.id.Bigimageview);
         String path = (String) getArguments().getSerializable(EXTRA_IMAGE_PATH);
         if (path!=null){
-            Log.e("location",path);
-            Bitmap temp = BitmapFactory.decodeFile(path);
+            Log.e("location", path);
+            Bitmap temp = pictureUtils.decodeSampledBitmapFromFile
+                    (path,200,200);
             imageView.setImageBitmap(temp);
             //imageView.setImageAlpha(R.drawable.camera);
         }
