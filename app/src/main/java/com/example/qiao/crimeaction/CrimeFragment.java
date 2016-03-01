@@ -16,6 +16,7 @@ import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -84,7 +85,7 @@ public class CrimeFragment extends Fragment{
                         .getPackageManager()) != null) {
 
                     File photofile = createFile();
-                    if (photofile!=null){
+                    if (photofile != null) {
                         mCrime.setImageLocation(photofile.toString());
                         i.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photofile));
                     }
@@ -148,6 +149,13 @@ public class CrimeFragment extends Fragment{
                                 .show(fragmentManager,DIALOG_IMAGE);
                     }
                 }
+            }
+        });
+        mimageview.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                getActivity().startActionMode(LongerimageCallback);
+                return true;
             }
         });
         setHasOptionsMenu(true);
@@ -243,4 +251,35 @@ public class CrimeFragment extends Fragment{
         return temp;
     }
 
+    ActionMode.Callback LongerimageCallback = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.crime_list_item_context,menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()){
+                case R.id.menu_item_delete_crime:
+                    mimageview.setImageResource(android.R.color.transparent);
+                    new File(mCrime.getMimageLocation()).delete();
+                    mode.finish();
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+
+        }
+    };
 }
