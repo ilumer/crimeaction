@@ -2,7 +2,6 @@ package com.example.qiao.crimeaction;
 
 import android.app.DialogFragment;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -12,9 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 
-/**
- * Created by qiao on 2016/2/29.
- */
 public class BigImageFragment extends DialogFragment{
     public static final String EXTRA_IMAGE_PATH =
             "com.example.qiao.crimeaction.imagePath";

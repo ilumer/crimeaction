@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -25,6 +26,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -35,9 +37,14 @@ public class CrimeListFragment extends ListFragment{
     private ArrayList<crime> mCrimes;
     private static final String TAG = "CrimeListFragment";
     private boolean msubtitle ;
-    private static final int RESULT_CRIME = 1;
     private ListView myListview;
     private CrimeAdapter myCrimeAdapter;
+    private HashMap<Integer,Boolean> mStorageState = new HashMap<>();
+
+    public static final int RESULT_CRIME = 1;
+
+    public static final String EXTRA_CRIME_MAP =
+            "com.example.qiao.crime_map";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,6 +53,9 @@ public class CrimeListFragment extends ListFragment{
         setHasOptionsMenu(true);
         setRetainInstance(true);
         msubtitle = false;
+        if (savedInstanceState!=null){
+            mStorageState = (HashMap<Integer,Boolean>) savedInstanceState.get(EXTRA_CRIME_MAP);
+        }
         //当接收到createMenu的回调方法使用
         mCrimes=crimelab.getScrimelab(getActivity()).getListCrimes();
 
@@ -57,8 +67,14 @@ public class CrimeListFragment extends ListFragment{
         crime c = (crime) myListview.getAdapter().getItem(position);
         //Log.e(TAG,c.getmTitle()+"was clicked");
         //start CrimePagerActivity
+        Log.e(TAG,c.getmSloved()+"what");
+        if (mStorageState.get(position)!=null) {
+            c.setmSloved(mStorageState.get(position));
+            crimelab.getScrimelab(getActivity()).getListCrimes()
+                    .get(position).setmSloved(mStorageState.get(position));
+        }
         Intent i = new Intent(getActivity(),CrimePagerActivity.class);
-        i.putExtra(CrimeFragment.ExTRA_CRIME_ID, c.getmId());
+        i.putExtra(CrimeFragment.ExTRA_CRIME_ID, c);
         startActivityForResult(i, RESULT_CRIME);
     }
 
@@ -80,7 +96,19 @@ public class CrimeListFragment extends ListFragment{
             dateTextView.setText(c.getmDate().toString());
             CheckBox IsSolvedCheckBox =
                     (CheckBox) convertView.findViewById(R.id.list_item_Issolved);
+            final int temp = position;
+            Log.e(TAG,c.toString());
             IsSolvedCheckBox.setChecked(c.getmSloved());
+            IsSolvedCheckBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (((CheckBox) v).isChecked()){
+                        mStorageState.put(temp,true);
+                    }else {
+                        mStorageState.put(temp,false);
+                    }
+                }
+            });
             return convertView;
         }
     }
@@ -89,6 +117,12 @@ public class CrimeListFragment extends ListFragment{
     public void onResume() {
         super.onResume();
         //((CrimeAdapter) getListAdapter()).notifyDataSetChanged();
+        for (int postion:mStorageState.keySet()){
+            if (mStorageState.get(postion)!=mCrimes.get(postion).getmSloved()){
+                if (mStorageState.get(postion)!=null)
+                    mCrimes.get(postion).setmSloved(mStorageState.get(postion));
+            }
+        }
         ((CrimeAdapter) myListview.getAdapter()).notifyDataSetChanged();
 
     }
@@ -96,7 +130,7 @@ public class CrimeListFragment extends ListFragment{
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode==RESULT_CRIME){
-
+            myCrimeAdapter.notifyDataSetChanged();
         }
     }
 
@@ -113,7 +147,7 @@ public class CrimeListFragment extends ListFragment{
                 crime c = new crime();
                 crimelab.getScrimelab(getActivity()).addCrime(c);
                 Intent i = new Intent(getActivity(),CrimePagerActivity.class);
-                i.putExtra(CrimeFragment.ExTRA_CRIME_ID, c.getmId());
+                i.putExtra(CrimeFragment.ExTRA_CRIME_ID, c);
                 startActivityForResult(i, 0);
                 break;
 
@@ -139,16 +173,6 @@ public class CrimeListFragment extends ListFragment{
     @TargetApi(11)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        /*View view = super.onCreateView(inflater, container, savedInstanceState);
-        ViewGroup parent = (ViewGroup) inflater.inflate(R.layout.my_list_view,container,false);
-        parent.addView(view,0);
-        /*myListview = (ListView) parent.findViewById(android.R.id.list );
-        //setListAdapter(new CrimeAdapter(mCrimes));
-        myCrimeAdapter = new CrimeAdapter(mCrimes);
-        myListview.setAdapter(myCrimeAdapter);
-        myListview.setEmptyView();
-        CrimeAdapter adapter = new CrimeAdapter(mCrimes);
-        setListAdapter(adapter);*/
         View parent = inflater.inflate(R.layout.my_list_view,null);
         myListview = (ListView) parent.findViewById(android.R.id.list);
         if (Build.VERSION.SDK_INT<Build.VERSION_CODES.HONEYCOMB) {
@@ -209,7 +233,7 @@ public class CrimeListFragment extends ListFragment{
                 crime c = new crime();
                 crimelab.getScrimelab(getActivity()).addCrime(c);
                 Intent i = new Intent(getActivity(),CrimePagerActivity.class);
-                i.putExtra(CrimeFragment.ExTRA_CRIME_ID, c.getmId());
+                i.putExtra(CrimeFragment.ExTRA_CRIME_ID, c);
                 startActivityForResult(i, 0);
             }
         });
@@ -249,5 +273,17 @@ public class CrimeListFragment extends ListFragment{
         }
         return super.onContextItemSelected(item);
         //响应上下文选择
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        crimelab.getScrimelab(getActivity()).savecrimes();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(EXTRA_CRIME_MAP,mStorageState);
     }
 }

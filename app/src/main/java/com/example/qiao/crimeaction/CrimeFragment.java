@@ -7,7 +7,6 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -28,7 +27,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -39,7 +37,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.UUID;
 
 public class CrimeFragment extends Fragment{
     private crime mCrime;
@@ -70,9 +67,11 @@ public class CrimeFragment extends Fragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //   UUID uuid = (UUID) getActivity().getIntent().getSerializableExtra(CrimeFragment.ExTRA_CRIME_ID);
-        UUID crimeId = (UUID) getArguments().getSerializable(CrimeFragment.ExTRA_CRIME_ID);
-        mCrime = crimelab.getScrimelab(getActivity()).getCrime(crimeId);
+        //UUID crimeId = (UUID) getArguments().getSerializable(CrimeFragment.ExTRA_CRIME_ID);
+        //mCrime = crimelab.getScrimelab(getActivity()).getCrime(crimeId);
+        mCrime = (crime) getArguments().getSerializable(CrimeFragment.ExTRA_CRIME_ID);
         setHasOptionsMenu(true);
+        getActivity().setResult(CrimeListFragment.RESULT_CRIME);
     }
 
     @TargetApi(11)
@@ -102,7 +101,6 @@ public class CrimeFragment extends Fragment{
                 }
             }
         });
-        //mDateButton.setText(GetSuitableDateformat());
         upDate();
         mDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,12 +113,7 @@ public class CrimeFragment extends Fragment{
         });
         mSolvedCheckedBox = (CheckBox) view.findViewById(R.id.Issolved);
         //mSolvedCheckedBox.setChecked(mCrime.getmSloved());
-        mSolvedCheckedBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mSolvedCheckedBox.setChecked(isChecked);
-            }
-        });
+        mSolvedCheckedBox.setChecked(mCrime.getmSloved());
         mTitleFiled.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -219,17 +212,17 @@ public class CrimeFragment extends Fragment{
         return view;
     }
 
-    public static Fragment newInstance(UUID crimeId){
+    public static Fragment newInstance(crime c){
         Bundle args = new Bundle();
-        args.putSerializable(CrimeFragment.ExTRA_CRIME_ID,crimeId);
+        args.putSerializable(CrimeFragment.ExTRA_CRIME_ID,c);
         CrimeFragment fragment = new CrimeFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
-    public void returnResult(){
+    /*public void returnResult(){
         getActivity().setResult(Activity.RESULT_OK, null);
-    }
+    }*/
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -293,6 +286,10 @@ public class CrimeFragment extends Fragment{
     @Override
     public void onPause() {
         super.onPause();
+        mCrime.setmSloved(mSolvedCheckedBox.isChecked());
+        mCrime.setmDate(new Date(mDateButton.getText().toString()));
+        mCrime.setmTitle(mTitleFiled.toString());
+        mCrime.setImageLocation(createFile().toString());
         crimelab.getScrimelab(getActivity()).savecrimes();
     }
 
@@ -316,13 +313,6 @@ public class CrimeFragment extends Fragment{
         return image;
     }
 
-    private Bitmap getBitmapwithFile(File file){
-        Bitmap temp = null;
-        if (file.exists()) {
-            temp = BitmapFactory.decodeFile(file.getAbsolutePath());
-        }
-        return temp;
-    }
 
     ActionMode.Callback LongerimageCallback = new ActionMode.Callback() {
         @Override

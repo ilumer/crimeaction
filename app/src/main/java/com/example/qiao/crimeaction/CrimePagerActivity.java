@@ -7,10 +7,11 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 
 import java.util.ArrayList;
-import java.util.UUID;
+
 
 public class CrimePagerActivity extends AppCompatActivity {
     private ViewPager mViewPager;
@@ -36,7 +37,7 @@ public class CrimePagerActivity extends AppCompatActivity {
             @Override
             public Fragment getItem(int position) {
                 crime mcrime = mCrimes.get(position);
-                return CrimeFragment.newInstance(mcrime.getmId());
+                return CrimeFragment.newInstance(mcrime);
             }
 
             @Override
@@ -64,10 +65,12 @@ public class CrimePagerActivity extends AppCompatActivity {
             }
         });
 
-        UUID uuid = (UUID)getIntent().getSerializableExtra(CrimeFragment.ExTRA_CRIME_ID);
+        crime c = (crime)getIntent().getSerializableExtra(CrimeFragment.ExTRA_CRIME_ID);
         for (int i =0;i<mCrimes.size();i++){
-            if (mCrimes.get(i).getmId()==uuid){
+            if (mCrimes.get(i).getmId().equals(c.getmId())){
                 mViewPager.setCurrentItem(i);
+                Log.e("error", mCrimes.get(i).getmSloved().toString() + "-"
+                        +c.getmSloved().toString());
                 break;
             }
         }

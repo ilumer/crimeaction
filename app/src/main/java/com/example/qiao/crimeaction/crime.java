@@ -6,13 +6,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
 /**
  * Created by qiao on 2016/2/17.
  */
-public class crime {
+public class crime implements Serializable{
     private UUID mId;
 
     private String mTitle;
@@ -96,7 +97,7 @@ public class crime {
 
     @Override
     public String toString() {
-        return mTitle;
+        return mTitle+mSloved;
     }
 
     public void setImageLocation(String file){
