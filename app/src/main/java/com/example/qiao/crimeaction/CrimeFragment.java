@@ -93,6 +93,7 @@ public class CrimeFragment extends Fragment{
                     //检查是否有应用可以响应隐式intent
 
                     File photofile = createFile();
+                    //mCrime.setImageLocation(photofile.toString());
                     if (photofile != null) {
                         mCrime.setImageLocation(photofile.toString());
                         i.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photofile));
@@ -122,12 +123,11 @@ public class CrimeFragment extends Fragment{
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                getActivity().setTitle(s);
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                //Todo:
             }
         });
         mTitleFiled.setText(mCrime.getmTitle());
@@ -288,8 +288,8 @@ public class CrimeFragment extends Fragment{
         super.onPause();
         mCrime.setmSloved(mSolvedCheckedBox.isChecked());
         mCrime.setmDate(new Date(mDateButton.getText().toString()));
-        mCrime.setmTitle(mTitleFiled.toString());
-        mCrime.setImageLocation(createFile().toString());
+        mCrime.setmTitle(mTitleFiled.getText().toString());
+        //mCrime.setImageLocation(createFile().toString());
         crimelab.getScrimelab(getActivity()).savecrimes();
     }
 
